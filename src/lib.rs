@@ -1,4 +1,17 @@
+//! This crate provides `inspect_or_log`, `unwrap_or_log` and `unwrap_or_default_log` methods
+//! on all types implemented [`Try`].
+//! They are useful if you want to log the error value.
+//!
+//! Different log levels are chosen by calling different methods.
+//!
+//! | method                   | level |
+//! | ------------------------ | ----- |
+//! | `inspect_or_log*`        | info  |
+//! | `unwrap_or_default_log*` | warn  |
+//! | `unwrap_or_log*`         | error |
+
 #![feature(try_trait_v2)]
+#![warn(missing_docs)]
 
 use log::{error, info, warn};
 use std::{
@@ -6,21 +19,38 @@ use std::{
     ops::{ControlFlow, Try},
 };
 
+/// This trait provides the or-log methods.
 pub trait TryLog<T, R: Debug> {
+    /// Log with [`log::Level::Info`] if the value is [`Err`] or [`None`].
     fn inspect_or_log(self, msg: &str) -> Self;
 
+    /// Log with [`log::Level::Info`] if the value is [`Err`] or [`None`].
+    ///
+    /// The log message is returned by `f`.
     fn inspect_or_log_with(self, f: impl FnOnce() -> String) -> Self;
 
+    /// Log with [`log::Level::Warn`] if the value is [`Err`] or [`None`],
+    /// and return a default value of `T`.
     fn unwrap_or_default_log(self, msg: &str) -> T
     where
         T: Default;
 
+    /// Log with [`log::Level::Warn`] if the value is [`Err`] or [`None`],
+    /// and return a default value of `T`.
+    ///
+    /// The log message is returned by `f`.
     fn unwrap_or_default_log_with(self, f: impl FnOnce() -> String) -> T
     where
         T: Default;
 
+    /// Log with [`log::Level::Error`] if the value is [`Err`] or [`None`],
+    /// and panic with the same error message.
     fn unwrap_or_log(self, msg: &str) -> T;
 
+    /// Log with [`log::Level::Error`] if the value is [`Err`] or [`None`],
+    /// and panic with the same error message.
+    ///
+    /// The log message is returned by `f`.
     fn unwrap_or_log_with(self, f: impl FnOnce() -> String) -> T;
 }
 
