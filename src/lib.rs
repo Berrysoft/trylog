@@ -15,7 +15,7 @@
 
 use log::{error, info, warn};
 use std::{
-    fmt::Debug,
+    fmt::{Debug, Display},
     ops::{ControlFlow, Try},
 };
 
@@ -27,7 +27,7 @@ pub trait TryLog<T, R: Debug> {
     /// Log with [`log::Level::Info`] if the value is [`Err`] or [`None`].
     ///
     /// The log message is returned by `f`.
-    fn inspect_or_log_with(self, f: impl FnOnce() -> String) -> Self;
+    fn inspect_or_log_with<M: Display>(self, f: impl FnOnce() -> M) -> Self;
 
     /// Log with [`log::Level::Warn`] if the value is [`Err`] or [`None`],
     /// and return a default value of `T`.
@@ -39,7 +39,7 @@ pub trait TryLog<T, R: Debug> {
     /// and return a default value of `T`.
     ///
     /// The log message is returned by `f`.
-    fn unwrap_or_default_log_with(self, f: impl FnOnce() -> String) -> T
+    fn unwrap_or_default_log_with<M: Display>(self, f: impl FnOnce() -> M) -> T
     where
         T: Default;
 
@@ -51,7 +51,7 @@ pub trait TryLog<T, R: Debug> {
     /// and panic with the same error message.
     ///
     /// The log message is returned by `f`.
-    fn unwrap_or_log_with(self, f: impl FnOnce() -> String) -> T;
+    fn unwrap_or_log_with<M: Display>(self, f: impl FnOnce() -> M) -> T;
 }
 
 #[inline(always)]
@@ -98,7 +98,7 @@ impl<T, R: Debug, Tr: Try<Output = T, Residual = R>> TryLog<T, R> for Tr {
     }
 
     #[inline(always)]
-    fn inspect_or_log_with(self, f: impl FnOnce() -> String) -> Self {
+    fn inspect_or_log_with<M: Display>(self, f: impl FnOnce() -> M) -> Self {
         inspect_or_and(self, |e| info!("{}: {e:?}", f()))
     }
 
@@ -111,7 +111,7 @@ impl<T, R: Debug, Tr: Try<Output = T, Residual = R>> TryLog<T, R> for Tr {
     }
 
     #[inline(always)]
-    fn unwrap_or_default_log_with(self, f: impl FnOnce() -> String) -> T
+    fn unwrap_or_default_log_with<M: Display>(self, f: impl FnOnce() -> M) -> T
     where
         T: Default,
     {
@@ -124,7 +124,7 @@ impl<T, R: Debug, Tr: Try<Output = T, Residual = R>> TryLog<T, R> for Tr {
     }
 
     #[inline(always)]
-    fn unwrap_or_log_with(self, f: impl FnOnce() -> String) -> T {
+    fn unwrap_or_log_with<M: Display>(self, f: impl FnOnce() -> M) -> T {
         unwrap_or_and(self, |e| format!("{}: {e:?}", f()))
     }
 }
