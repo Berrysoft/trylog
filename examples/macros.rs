@@ -6,7 +6,7 @@ fn main() {
 
     assert_eq!(inspect_or_log!(None::<()>, "It is"), None);
 
-    assert_eq!(unwrap_or_default_log!(None::<i32>, "It is"), 0);
+    assert_eq!(unwrap_or_default_log!(None::<i32>, 114514), 0);
 
-    assert_eq!(unwrap_or_log!(None::<i32>, "It is"), 0);
+    assert_eq!(unwrap_or_log!(None::<i32>, format!("It is")), 0);
 }

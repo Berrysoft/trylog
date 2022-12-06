@@ -58,7 +58,7 @@ where
 }
 
 /// Log with [`log::Level::Info`] if the value is [`Err`] or [`None`].
-pub macro inspect_or_log($e:expr, $t:tt) {
+pub macro inspect_or_log($e:expr, $t:expr) {
     match $crate::macros::__TryWrapper($e).branch() {
         __ControlFlowWrapper::Continue(v) => v.restore(),
         __ControlFlowWrapper::Break(e) => {
@@ -70,7 +70,7 @@ pub macro inspect_or_log($e:expr, $t:tt) {
 
 /// Log with [`log::Level::Warn`] if the value is [`Err`] or [`None`],
 /// and return a default value of `T`.
-pub macro unwrap_or_default_log($e:expr, $t:tt) {
+pub macro unwrap_or_default_log($e:expr, $t:expr) {
     match $crate::macros::__TryWrapper($e).branch() {
         __ControlFlowWrapper::Continue(v) => v.0,
         __ControlFlowWrapper::Break(e) => {
@@ -82,7 +82,7 @@ pub macro unwrap_or_default_log($e:expr, $t:tt) {
 
 /// Log with [`log::Level::Error`] if the value is [`Err`] or [`None`],
 /// and panic with the same error message.
-pub macro unwrap_or_log($e:expr, $t:tt) {
+pub macro unwrap_or_log($e:expr, $t:expr) {
     match $crate::macros::__TryWrapper($e).branch() {
         __ControlFlowWrapper::Continue(v) => v.0,
         __ControlFlowWrapper::Break(e) => {
