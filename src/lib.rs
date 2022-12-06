@@ -10,8 +10,14 @@
 //! | `unwrap_or_default_log*` | warn  |
 //! | `unwrap_or_log*`         | error |
 
+#![feature(decl_macro)]
 #![feature(try_trait_v2)]
 #![warn(missing_docs)]
+
+pub mod macros;
+
+#[doc(hidden)]
+pub use log as __log;
 
 use log::{error, info, warn};
 use std::{
